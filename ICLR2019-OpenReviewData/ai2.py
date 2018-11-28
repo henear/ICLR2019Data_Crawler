@@ -32,17 +32,16 @@ def crawlDateURL(allURLs):
 		for tt in t:
 			ttt = str(tt)
 			if "readers:" in ttt:
-				print(ttt)
+				
 				c, d = ttt.split(":")
 				e, f = d.split("<")
 				a[1] = "\"" + e[1:] + "\""
 		print(a)
 		b.append(a)
 		
-	print(b)
 	return b
 
-crawlDateURL("url2.txt")
+# crawlDateURL("url2.txt")
 
 
 

@@ -1,12 +1,10 @@
 import ai
 import ai2
-
-A = ai.crawl_meta(allURLs="url2.txt",meta_hdf5=None, write_meta_name='data.hdf5')
-print(len(A))
-
+# B = ai2.crawlDateURL("urls.txt")
+# print(B)
+A = ai.crawl_meta("url2.txt")
 B = ai2.crawlDateURL("url2.txt")
-print(len(B))
-print(len(B[0]))
+# print(A)
 for i in range(len(A)):
 	A[i][-3] = B[i][0]
 	A[i][-2] = B[i][1]
@@ -20,7 +18,9 @@ with open("output.json", "a") as f:
 			curLine += keys[k] + ": " + str(A[j][k]) + ",\n"
 			# print(str(A[j][k]))
 		curLine = curLine[:-2] + curLine[-1]
-		curLine += "}\n"
+		if j < len(A) - 1:
+			curLine += "},\n"
+		else:
+			curLine += "}\n"
 		f.write(curLine)
 	f.write("]")
-

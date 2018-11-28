@@ -81,7 +81,7 @@ def crawl_meta(allURLs,meta_hdf5=None, write_meta_name='data.hdf5'):
     if meta_hdf5 is None:
         # Crawl the meta data from OpenReview
         # Set up a browser to crawl from dynamic web pages
-        curLine = [""] * 12 
+        
         
         executable_path = '/usr/local/bin/chromedriver'
         options = Options()
@@ -98,6 +98,7 @@ def crawl_meta(allURLs,meta_hdf5=None, write_meta_name='data.hdf5'):
         wait_time = 0.5
         max_try = 2000
         for i, url in enumerate(urls):
+            curLine = [""] * 12 
             try:
                 browser.get(url)
 
@@ -107,7 +108,6 @@ def crawl_meta(allURLs,meta_hdf5=None, write_meta_name='data.hdf5'):
                 key = browser.find_elements_by_class_name("note_content_field")
                 key = [k.text for k in key]
                 
-                print(key)
                 withdrawn = 'Withdrawal confirmation:' in key
                 value = browser.find_elements_by_class_name("note_content_value")
                 # print(value)
@@ -134,6 +134,9 @@ def crawl_meta(allURLs,meta_hdf5=None, write_meta_name='data.hdf5'):
                             print('Reached max try: {} ({})'.format(title, url))
                             break
                 abstract = ' '.join(value[key.index('Abstract:')].split('\n'))
+                abstract.replace("\"", "*")
+                abstract.replace("\n", "  ")
+                abstract.replace("\\", "\\\\")
                 curLine[-4] = "\"" + abstract + "\""
                 # keyword
                 if 'Keywords:' in key:
@@ -166,7 +169,6 @@ def crawl_meta(allURLs,meta_hdf5=None, write_meta_name='data.hdf5'):
 
                
                 curLine[1] = "\"" + str(keyword) + "\""
-                # print(rating)
 
                 # Review
                 review_idx = [i for i, x in enumerate(key) if x == "Review:"]
@@ -178,6 +180,7 @@ def crawl_meta(allURLs,meta_hdf5=None, write_meta_name='data.hdf5'):
                         # print(value[idx])
                         value[idx] = value[idx].replace("\"", "*")
                         value[idx] = value[idx].replace("\n", "  ")
+                        value[idx] = value[idx].replace("\\", "\\\\")
                         curLine[reCount*2+3] = "\"" + value[idx].replace("\"", "*") + "\""
                         reCount += 1
                         if reCount >= 3:
@@ -205,8 +208,8 @@ def crawl_meta(allURLs,meta_hdf5=None, write_meta_name='data.hdf5'):
 # Uncomment this if you want to load the previously stored data file
 # meta_list = crawl_meta('data.hdf5')
 # Uncomment this if you want to cral data from scratch
-meta_list = crawl_meta(allURLs="url2.txt")
-print(meta_list)
+# meta_list = crawl_meta(allURLs="url2.txt")
+
 # num_withdrawn = len([m for m in meta_list if m.withdrawn])
 # print('Number of submissions: {} (withdrwan submissions: {})'.format(
 #     len(meta_list), num_withdrawn))
