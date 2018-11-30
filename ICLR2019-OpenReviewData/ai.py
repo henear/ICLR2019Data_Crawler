@@ -98,7 +98,7 @@ def crawl_meta(allURLs,meta_hdf5=None, write_meta_name='data.hdf5'):
         wait_time = 0.5
         max_try = 2000
         for i, url in enumerate(urls):
-            curLine = [""] * 12 
+            curLine = [""] * 15 
             try:
                 browser.get(url)
 
@@ -107,6 +107,7 @@ def crawl_meta(allURLs,meta_hdf5=None, write_meta_name='data.hdf5'):
                 time.sleep(wait_time)
                 key = browser.find_elements_by_class_name("note_content_field")
                 key = [k.text for k in key]
+                print(key)
                 
                 withdrawn = 'Withdrawal confirmation:' in key
                 value = browser.find_elements_by_class_name("note_content_value")
@@ -137,7 +138,7 @@ def crawl_meta(allURLs,meta_hdf5=None, write_meta_name='data.hdf5'):
                 abstract.replace("\"", "*")
                 abstract.replace("\n", "  ")
                 abstract.replace("\\", "\\\\")
-                curLine[-4] = "\"" + abstract + "\""
+                curLine[8] = "\"" + abstract + "\""
                 # keyword
                 if 'Keywords:' in key:
                     keyword = value[key.index('Keywords:')].split(',')
@@ -170,21 +171,53 @@ def crawl_meta(allURLs,meta_hdf5=None, write_meta_name='data.hdf5'):
                
                 curLine[1] = "\"" + str(keyword) + "\""
 
-                # Review
+                # Review & Comment
+                comment_idx = [i for i, x in enumerate(key) if x == "Comment:"]
+
                 review_idx = [i for i, x in enumerate(key) if x == "Review:"]
+ 
                 review = []
                 reCount = 0
+                preReview = 0
                 if len(review_idx) > 0:
-                    for idx in review_idx:
+                    for i in range(len(review_idx)):
                         
                         # print(value[idx])
+                        idx = review_idx[i]
                         value[idx] = value[idx].replace("\"", "*")
                         value[idx] = value[idx].replace("\n", "  ")
                         value[idx] = value[idx].replace("\\", "\\\\")
                         curLine[reCount*2+3] = "\"" + value[idx].replace("\"", "*") + "\""
                         reCount += 1
+                        cmCount = 0
+                        curComment = []
+                        if i != len(review_idx) - 1:
+                            for comment_iter in range(review_idx[i], review_idx[i+1]):
+                                if comment_iter in comment_idx:
+                                    
+                                    value[comment_iter] = value[comment_iter].replace("\"", "*")
+                                    value[comment_iter] = value[comment_iter].replace("\n", "  ")
+                                    value[comment_iter] = value[comment_iter].replace("\\", "\\\\")
+                                    curComment.append(value[comment_iter])
+                                    cmCount += 1
+
+                        else:
+                            for comment_iter in range(review_idx[i], len(value)):
+                                if comment_iter in comment_idx:
+                                    
+                                    value[comment_iter] = value[comment_iter].replace("\"", "*")
+                                    value[comment_iter] = value[comment_iter].replace("\n", "  ")
+                                    value[comment_iter] = value[comment_iter].replace("\\", "\\\\")
+                                    curComment.append(value[comment_iter])
+                                    cmCount += 1
+                        
+                        curLine[-i-4] = curComment
+
+
+
                         if reCount >= 3:
                             break
+                
 
                         
                         
