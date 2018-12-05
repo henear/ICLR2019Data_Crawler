@@ -2,8 +2,8 @@ import ai
 import ai2
 # B = ai2.crawlDateURL("urls.txt")
 # print(B)
-A = ai.crawl_meta("url2.txt")
-B = ai2.crawlDateURL("url2.txt")
+A = ai.crawl_meta("url2018oral.txt")
+B = ai2.crawlDateURL("url2018oral.txt")
 # print(A)
 for i in range(len(A)):
 	A[i][-3] = B[i][0]
@@ -11,7 +11,7 @@ for i in range(len(A)):
 	A[i][-1] = B[i][2]
 keysfromA = ["\"Title\"","\"Keyword\"","\"Rating1\"","\"Review1\"","\"Rating2\"","\"Review2\"","\"Rating3\"","\"Review3\"", "\"Abstract\""]
 keysfromB = ["\"Publication_Date\"","\"Readers\"","\"URL\""]
-with open("output.json", "a") as f:
+with open("output2018oral.json", "a") as f:
 	f.write("[\n")
 	for j in range(len(A)):
 		curLine = "{\n"
